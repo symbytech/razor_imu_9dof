@@ -34,6 +34,7 @@ import math
 import sys
 
 #from time import time
+from std_msgs.msg import Int16
 from sensor_msgs.msg import Imu
 from tf.transformations import quaternion_from_euler
 from dynamic_reconfigure.server import Server
@@ -55,10 +56,12 @@ def reconfig_callback(config, level):
 rospy.init_node("razor_node")
 #We only care about the most recent measurement, i.e. queue_size=1
 pub = rospy.Publisher('imu', Imu, queue_size=1)
+pubturncount = rospy.Publisher('imu_turncount', Int16, queue_size=1)
 srv = Server(imuConfig, reconfig_callback)  # define dynamic_reconfigure callback
-diag_pub = rospy.Publisher('diagnostics', DiagnosticArray, queue_size=1)
+diag_pub = rospy.Publisher('diagnostics', DiagnosticArray, queue_size=1)\
 diag_pub_time = rospy.get_time();
 
+imuTCMsg = Int16()
 imuMsg = Imu()
 
 # Orientation covariance estimation:
@@ -146,6 +149,7 @@ roll=0
 pitch=0
 yaw=0
 seq=0
+turn_count=0
 accel_factor = 9.806 / 256.0    # sensor reports accel as 256.0 = 1G (9.8m/s^2). Convert to m/s^2.
 rospy.loginfo("Giving the razor IMU board 5 seconds to boot...")
 rospy.sleep(5) # Sleep for 5 seconds to wait for the board to boot
@@ -227,10 +231,16 @@ while not rospy.is_shutdown():
         #in AHRS firmware z axis points down, in ROS z axis points up (see REP 103)
         yaw_deg = -float(words[0])
         yaw_deg = yaw_deg + imu_yaw_calibration
+
+        #yaw accumulates, we need to reset it
+        #we will take the ooportunity to count rotations
+
         if yaw_deg > 180.0:
             yaw_deg = yaw_deg - 360.0
+            turn_count = turn_count - 1
         if yaw_deg < -180.0:
             yaw_deg = yaw_deg + 360.0
+            turn_count = turn_count + 1
         yaw = yaw_deg*degrees2rad
         #in AHRS firmware y axis points right, in ROS y axis points left (see REP 103)
         pitch = -float(words[1])*degrees2rad
@@ -259,6 +269,11 @@ while not rospy.is_shutdown():
     imuMsg.header.seq = seq
     seq = seq + 1
     pub.publish(imuMsg)
+
+    imuTCMsg.data = turn_count
+    pubturncount.publish(imuTCMsg)
+
+
 
     if (diag_pub_time < rospy.get_time()) :
         diag_pub_time += 1
