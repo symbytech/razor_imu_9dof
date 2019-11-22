@@ -223,6 +223,7 @@ rospy.loginfo("Publishing IMU data...")
 #f = open("raw_imu_data.log", 'w')
 
 while not rospy.is_shutdown():
+    print("imu node running")
     line = ser.readline()
     line = line.replace("#YPRAG=","")   # Delete "#YPRAG="
     #f.write(line)                     # Write to the output log file
@@ -271,6 +272,7 @@ while not rospy.is_shutdown():
     pub.publish(imuMsg)
 
     imuTCMsg.data = turn_count
+    print("imu turn count msg: ",imuTCMsg)
     pubturncount.publish(imuTCMsg)
 
 
