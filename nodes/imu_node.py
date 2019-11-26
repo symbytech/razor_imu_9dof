@@ -59,7 +59,7 @@ pub = rospy.Publisher('imu', Imu, queue_size=1)
 pubturncount = rospy.Publisher('imu_turncount', Int16, queue_size=1)
 srv = Server(imuConfig, reconfig_callback)  # define dynamic_reconfigure callback
 diag_pub = rospy.Publisher('diagnostics', DiagnosticArray, queue_size=1)\
-diag_pub_time = rospy.get_time();
+diag_pub_time = rospy.get_time()
 
 imuTCMsg = Int16()
 imuMsg = Imu()
