@@ -34,8 +34,8 @@ import math
 import sys
 
 #from time import time
-from std_msgs.msg import Int16
 from sensor_msgs.msg import Imu
+from razor_imu_9dof.msg import IMUeuler
 from tf.transformations import quaternion_from_euler
 from dynamic_reconfigure.server import Server
 from razor_imu_9dof.cfg import imuConfig
@@ -56,12 +56,12 @@ def reconfig_callback(config, level):
 rospy.init_node("razor_node")
 #We only care about the most recent measurement, i.e. queue_size=1
 pub = rospy.Publisher('imu', Imu, queue_size=1)
-pubturncount = rospy.Publisher('imu_turncount', Int16, queue_size=1)
+pub_euler = rospy.Publisher('imu_euler', IMUeuler, queue_size=1)
 srv = Server(imuConfig, reconfig_callback)  # define dynamic_reconfigure callback
 diag_pub = rospy.Publisher('diagnostics', DiagnosticArray, queue_size=1)\
 diag_pub_time = rospy.get_time()
 
-imuTCMsg = Int16()
+imueulerMsg = IMUeuler()
 imuMsg = Imu()
 
 # Orientation covariance estimation:
@@ -260,7 +260,18 @@ while not rospy.is_shutdown():
         #in AHRS firmware z axis points down, in ROS z axis points up (see REP 103) 
         imuMsg.angular_velocity.z = -float(words[8])
 
+    imueulerMsg = IMUeuler()
+    imueulerMsg.angle.x = roll
+    imueulerMsg.angle.y = pitch
+    imueulerMsg.angle.z = yaw
+    imueulerMsg.turn_count = turn_count
+    imueulerMsg.header.stamp= rospy.Time.now()
+    imueulerMsg.header.frame_id = 'base_imu_link'
+    imueulerMsg.header.seq = seq
+    pub_euler.publish(imueulerMsg)
+
     q = quaternion_from_euler(roll,pitch,yaw)
+
     imuMsg.orientation.x = q[0]
     imuMsg.orientation.y = q[1]
     imuMsg.orientation.z = q[2]
@@ -271,9 +282,6 @@ while not rospy.is_shutdown():
     seq = seq + 1
     pub.publish(imuMsg)
 
-    imuTCMsg.data = turn_count
-    print("imu turn count msg: ",imuTCMsg)
-    pubturncount.publish(imuTCMsg)
 
 
 

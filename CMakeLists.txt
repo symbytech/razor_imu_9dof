@@ -1,11 +1,34 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(razor_imu_9dof)
 
-find_package(catkin REQUIRED COMPONENTS dynamic_reconfigure)
+find_package(catkin REQUIRED COMPONENTS 
+  dynamic_reconfigure
+  std_msgs
+  geometry_msgs
+  sensor_msgs
+  message_generation
+)
 
 generate_dynamic_reconfigure_options(cfg/imu.cfg)
 
-catkin_package(DEPENDS CATKIN DEPENDS dynamic_reconfigure)
+add_message_files(
+  FILES
+  IMUeuler.msg
+)
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+  geometry_msgs
+  sensor_msgs
+)
+
+catkin_package(DEPENDS CATKIN DEPENDS 
+  dynamic_reconfigure 
+  message_runtime
+)
+
+
 
 install(DIRECTORY launch
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
