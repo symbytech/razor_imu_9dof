@@ -96,7 +96,7 @@ while not rospy.is_shutdown():
     imueulerMsg.angle.x = roll
     imueulerMsg.angle.y = pitch
     imueulerMsg.angle.z = yaw
-    imueulerMsg.turn_count = turn_count
+    imueulerMsg.turncount = turn_count
     imueulerMsg.header.stamp= rospy.Time.now()
     imueulerMsg.header.frame_id = 'base_imu_link'
     imueulerMsg.header.seq = seq
