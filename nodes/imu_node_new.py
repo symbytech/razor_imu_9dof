@@ -82,8 +82,9 @@ rospy.loginfo("Publishing IMU data...")
 
 
 while not rospy.is_shutdown():
-    print("imu node running")
+    #print("imu node running")
     line = ser.readline()
+    print(line)
     #line = line.replace("#YPRAG=","")   # Delete "#YPRAG="
     words = string.split(line,",")    # Fields split
     if len(words) > 2: #we have pitch roll and yaw
