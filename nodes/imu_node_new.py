@@ -43,7 +43,7 @@ degrees2rad = math.pi/180.0
 
 
 rospy.init_node("razor_node")
-pub_euler = rospy.Publisher('imu_euler', IMUeuler, queue_size=1)
+pub_euler = rospy.Publisher('imu_euler', IMUeuler, queue_size=100)
 
 imueulerMsg = IMUeuler()
 
