@@ -80,11 +80,12 @@ for x in range(0, 200):
     line = ser.readline()
 rospy.loginfo("Publishing IMU data...")
 
+rate = rospy.Rate(2)
 
 while not rospy.is_shutdown():
     #print("imu node running")
     line = ser.readline()
-    print(line)
+    #print(line)
     #line = line.replace("#YPRAG=","")   # Delete "#YPRAG="
     words = string.split(line,",")    # Fields split
     if len(words) > 2: #we have pitch roll and yaw
@@ -101,10 +102,11 @@ while not rospy.is_shutdown():
     imueulerMsg.header.stamp= rospy.Time.now()
     imueulerMsg.header.frame_id = 'base_imu_link'
     imueulerMsg.header.seq = seq
-    print(imueulerMsg)
+    #print(imueulerMsg)
     pub_euler.publish(imueulerMsg)
     seq = seq + 1
  
+    rate.sleep()
         
 ser.close
 #f.close
