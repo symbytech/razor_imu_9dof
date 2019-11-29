@@ -35,20 +35,12 @@ import sys
 
 #from time import time
 from razor_imu_9dof.msg import IMUeuler
-from dynamic_reconfigure.server import Server
-from razor_imu_9dof.cfg import imuConfig
-from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
+
+
 
 degrees2rad = math.pi/180.0
 
-# Callback for dynamic reconfigure requests
-def reconfig_callback(config, level):
-    global imu_yaw_calibration
-    rospy.loginfo("""Reconfigure request for yaw_calibration: %d""" %(config['yaw_calibration']))
-    #if imu_yaw_calibration != config('yaw_calibration'):
-    imu_yaw_calibration = config['yaw_calibration']
-    rospy.loginfo("Set imu_yaw_calibration to %d" % (imu_yaw_calibration))
-    return config
+
 
 rospy.init_node("razor_node")
 pub_euler = rospy.Publisher('imu_euler', IMUeuler, queue_size=1)
@@ -95,20 +87,7 @@ while not rospy.is_shutdown():
     #line = line.replace("#YPRAG=","")   # Delete "#YPRAG="
     words = string.split(line,",")    # Fields split
     if len(words) > 2: #we have pitch roll and yaw
-        #in AHRS firmware z axis points down, in ROS z axis points up (see REP 103)
         yaw = float(words[2])
-
-        #yaw accumulates, we need to reset it
-        #we will take the ooportunity to count rotations
-
-        if yaw_deg > 180.0:
-            yaw_deg = yaw_deg - 360.0
-            turn_count = turn_count - 1
-        if yaw_deg < -180.0:
-            yaw_deg = yaw_deg + 360.0
-            turn_count = turn_count + 1
-        yaw = yaw_deg*degrees2rad
-        #in AHRS firmware y axis points right, in ROS y axis points left (see REP 103)
         pitch = float(words[0])*degrees2rad
         roll = float(words[1])*degrees2rad
 
