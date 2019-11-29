@@ -89,8 +89,8 @@ while not rospy.is_shutdown():
     words = string.split(line,",")    # Fields split
     if len(words) > 2: #we have pitch roll and yaw
         yaw = float(words[2])
-        pitch = float(words[0])*degrees2rad
-        roll = float(words[1])*degrees2rad
+        pitch = float(words[0])
+        roll = float(words[1])
 
     # Publish message
     imueulerMsg = IMUeuler()
@@ -101,6 +101,7 @@ while not rospy.is_shutdown():
     imueulerMsg.header.stamp= rospy.Time.now()
     imueulerMsg.header.frame_id = 'base_imu_link'
     imueulerMsg.header.seq = seq
+    print(imueulerMsg)
     pub_euler.publish(imueulerMsg)
     seq = seq + 1
  
