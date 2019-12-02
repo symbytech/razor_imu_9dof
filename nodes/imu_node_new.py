@@ -80,7 +80,7 @@ for x in range(0, 200):
     line = ser.readline()
 rospy.loginfo("Publishing IMU data...")
 
-rate = rospy.Rate(2)
+rate = rospy.Rate(1) #1Hz
 
 while not rospy.is_shutdown():
     #print("imu node running")
