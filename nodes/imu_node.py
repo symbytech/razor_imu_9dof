@@ -221,7 +221,8 @@ for x in range(0, 200):
     line = ser.readline()
 rospy.loginfo("Publishing IMU data...")
 #f = open("raw_imu_data.log", 'w')
-
+yaw_deg = 0
+prev_yaw_deg = 0
 while not rospy.is_shutdown():
     print("imu node running")
     line = ser.readline()
@@ -230,18 +231,23 @@ while not rospy.is_shutdown():
     words = string.split(line,",")    # Fields split
     if len(words) > 2:
         #in AHRS firmware z axis points down, in ROS z axis points up (see REP 103)
+        prev_yaw_deg = yaw_deg
         yaw_deg = -float(words[0])
         yaw_deg = yaw_deg + imu_yaw_calibration
 
         #yaw accumulates, we need to reset it
         #we will take the ooportunity to count rotations
-
-        if yaw_deg > 180.0:
-            yaw_deg = yaw_deg - 360.0
-            turn_count = turn_count - 1
-        if yaw_deg < -180.0:
-            yaw_deg = yaw_deg + 360.0
+        if yaw_deg < 10 and prev_yaw_deg > 300:
             turn_count = turn_count + 1
+        elif yaw_deg > 300 and prev_yaw_deg < 10:
+            turn_count = turn_count - 1
+        print(yaw_deg, prev_yaw_deg)
+        # if yaw_deg > 180.0:
+        #     yaw_deg = yaw_deg - 360.0
+        #     turn_count = turn_count - 1
+        # if yaw_deg < -180.0:
+        #     yaw_deg = yaw_deg + 360.0
+        #     turn_count = turn_count + 1
         yaw = yaw_deg*degrees2rad
         #in AHRS firmware y axis points right, in ROS y axis points left (see REP 103)
         pitch = -float(words[1])*degrees2rad
