@@ -81,7 +81,8 @@ for x in range(0, 200):
 rospy.loginfo("Publishing IMU data...")
 
 rate = rospy.Rate(1) #1Hz
-
+yaw=0
+prev_yaw=0
 while not rospy.is_shutdown():
     #print("imu node running")
     line = ser.readline()
@@ -92,6 +93,13 @@ while not rospy.is_shutdown():
         yaw = float(words[2])
         pitch = float(words[0])
         roll = float(words[1])
+
+    #we will take the ooportunity to count rotations
+    if yaw < 10 and prev_yaw > 300:
+        turn_count = turn_count + 1
+    elif yaw > 300 and prev_yaw < 10:
+        turn_count = turn_count - 1
+    print(yaw, prev_yaw)
 
     # Publish message
     imueulerMsg = IMUeuler()
