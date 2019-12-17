@@ -43,7 +43,7 @@ degrees2rad = math.pi/180.0
 
 
 rospy.init_node("razor_node")
-pub_euler = rospy.Publisher('imu_euler', IMUeuler, queue_size=100)
+pub_euler = rospy.Publisher('imu_euler', IMUeuler, queue_size=1)
 
 imueulerMsg = IMUeuler()
 
@@ -90,16 +90,17 @@ while not rospy.is_shutdown():
     #line = line.replace("#YPRAG=","")   # Delete "#YPRAG="
     words = string.split(line,",")    # Fields split
     if len(words) > 2: #we have pitch roll and yaw
+        prev_yaw = yaw
         yaw = float(words[2])
         pitch = float(words[0])
         roll = float(words[1])
 
-    #we will take the ooportunity to count rotations
-    if yaw < 10 and prev_yaw > 300:
-        turn_count = turn_count + 1
-    elif yaw > 300 and prev_yaw < 10:
-        turn_count = turn_count - 1
-    print(yaw, prev_yaw)
+        #we will take the ooportunity to count rotations
+        if yaw < 10 and prev_yaw > 300:
+            turn_count = turn_count + 1
+        elif yaw > 300 and prev_yaw < 10:
+            turn_count = turn_count - 1
+        print(yaw, prev_yaw)
 
     # Publish message
     imueulerMsg = IMUeuler()
