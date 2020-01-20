@@ -56,7 +56,7 @@ imueulerMsg = IMUeuler()
 rospy.loginfo("Opening %s...", port)
 try:
     for port in serial.tools.list_ports.comports():
-        if port.serial_number == "AL05REEM":
+        if port.serial_number == "C719D0C05150334C414A2020FF011C26":
             ser = serial.Serial(port.device, 9600)
 except serial.serialutil.SerialException:
     rospy.logerr("IMU not found at port "+port + ". Did you specify the correct port in the launch file?")
