@@ -47,15 +47,17 @@ pub_euler = rospy.Publisher('imu_euler', IMUeuler, queue_size=1)
 
 imueulerMsg = IMUeuler()
 
-default_port='/dev/IMU'
-port = rospy.get_param('~port', default_port)
-baud = rospy.get_param('~baud')
+# default_port='/dev/IMU'
+# port = rospy.get_param('~port', default_port)
+# baud = rospy.get_param('~baud')
 
 
 # Check your COM port and baud rate
 rospy.loginfo("Opening %s...", port)
 try:
-    ser = serial.Serial(port=port, baudrate=baud, timeout=1)
+    for port in serial.tools.list_ports.comports():
+        if port.serial_number == "AL05REEM":
+            ser = serial.Serial(port.device, 9600)
 except serial.serialutil.SerialException:
     rospy.logerr("IMU not found at port "+port + ". Did you specify the correct port in the launch file?")
     #exit
