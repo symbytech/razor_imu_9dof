@@ -47,7 +47,7 @@ pub_euler = rospy.Publisher('imu_euler', IMUeuler, queue_size=1)
 
 imueulerMsg = IMUeuler()
 
-default_port='/dev/ttyUSB0'
+default_port='/dev/IMU'
 port = rospy.get_param('~port', default_port)
 baud = rospy.get_param('~baud')
 
