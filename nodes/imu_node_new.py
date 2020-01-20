@@ -29,6 +29,7 @@
 
 import rospy
 import serial
+import serial.tools.list_ports
 import string
 import math
 import sys
