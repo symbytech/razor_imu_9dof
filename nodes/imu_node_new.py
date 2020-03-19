@@ -54,7 +54,7 @@ imueulerMsg = IMUeuler()
 
 
 # Check your COM port and baud rate
-rospy.loginfo("Opening %s...", port)
+rospy.loginfo("Opening port")
 try:
     for port in serial.tools.list_ports.comports():
         if port.serial_number == "C719D0C05150334C414A2020FF011C26":
