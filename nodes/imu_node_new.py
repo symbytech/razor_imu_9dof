@@ -87,6 +87,7 @@ rate = rospy.Rate(1) #1Hz
 yaw=0
 prev_yaw=0
 while not rospy.is_shutdown():
+    ser.reset_input_buffer()
     #print("imu node running")
     line = ser.readline()
     #print(line)
